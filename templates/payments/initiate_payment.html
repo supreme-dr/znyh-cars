@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Secure Deposit — ZNYH Cars{% endblock %}
+
+{% block content %}
+<div class="container my-5" style="max-width:500px;">
+    <div class="card shadow-sm text-center">
+        <div class="card-body p-5">
+            <h3 class="mb-3">Reserve This Car</h3>
+            <p class="text-muted">{{ car }}</p>
+            <hr>
+            <p class="lead mb-1">Required Deposit (10%)</p>
+            <h2 class="text-primary mb-4">₦{{ deposit_amount|floatformat:2 }}</h2>
+            
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success btn-lg w-100">Pay Securely with Paystack</button>
+            </form>
+            <p class="text-muted small mt-3">You will be redirected to Paystack to complete your payment.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+    

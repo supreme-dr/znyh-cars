@@ -1,0 +1,277 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block title %}My Dashboard — ZNYH Cars{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="row g-0">
+        
+        <!-- MEAN & CLASSIC SIDEBAR -->
+        <div class="col-lg-3 col-xl-2 d-none d-lg-block bg-dark text-white min-vh-100 position-sticky" style="top: 0;">
+            <div class="p-4">
+                <h5 class="fw-bold text-warning mb-4"><i class="bi bi-speedometer2 me-2"></i>Portal</h5>
+                <ul class="nav flex-column gap-2">
+                    <li class="nav-item">
+                        <a class="nav-link text-white bg-secondary bg-opacity-25 rounded" href="#"><i class="bi bi-grid-fill me-2"></i>Overview</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light opacity-75" href="{% url 'car_list' %}"><i class="bi bi-car-front me-2"></i>Buy a Car</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light opacity-75" href="{% url 'book_service' %}"><i class="bi bi-tools me-2"></i>Book Service</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light opacity-75" href="{% url 'contact' %}"><i class="bi bi-envelope me-2"></i>Contact Support</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT AREA -->
+        <div class="col-lg-9 col-xl-10 bg-light">
+            
+            <!-- Header -->
+            <div class="bg-white border-bottom p-4 d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="fw-bold mb-1">Welcome Back, {{ user.first_name|default:user.username }}</h3>
+                    <p class="text-muted small mb-0">Here is a summary of your account activity.</p>
+                </div>
+                <div>
+                    <a href="{% url 'home' %}" class="btn btn-outline-dark btn-sm fw-bold"><i class="bi bi-house-door me-1"></i>Storefront</a>
+                </div>
+            </div>
+
+            <div class="p-4">
+                
+                <!-- STAT CARDS (Responsive Grid) -->
+                <div class="row g-4 mb-4">
+                    <div class="col-sm-6 col-md-3">
+                        <div class="card border-0 shadow-sm h-100 border-start border-4 border-success">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-muted small fw-bold text-uppercase">Payments</span>
+                                    <i class="bi bi-credit-card text-success fs-5"></i>
+                                </div>
+                                <h3 class="fw-bold mb-0">{{ payments|length }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-3">
+                        <div class="card border-0 shadow-sm h-100 border-start border-4 border-primary">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-muted small fw-bold text-uppercase">Test Drives</span>
+                                    <i class="bi bi-key text-primary fs-5"></i>
+                                </div>
+                                <h3 class="fw-bold mb-0">{{ test_drives|length }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-3">
+                        <div class="card border-0 shadow-sm h-100 border-start border-4 border-warning">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-muted small fw-bold text-uppercase">Inquiries</span>
+                                    <i class="bi bi-envelope text-warning fs-5"></i>
+                                </div>
+                                <h3 class="fw-bold mb-0">{{ inquiries|length }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-3">
+                        <div class="card border-0 shadow-sm h-100 border-start border-4 border-info">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-muted small fw-bold text-uppercase">Services</span>
+                                    <i class="bi bi-tools text-info fs-5"></i>
+                                </div>
+                                <h3 class="fw-bold mb-0">{{ services|length }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    
+                    <!-- Payments Table (Makes you look professional) -->
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                                <h5 class="fw-bold mb-0"><i class="bi bi-credit-card me-2 text-success"></i>Payment History</h5>
+                            </div>
+                            <div class="card-body p-0">
+                                {% if payments %}
+                                    <div class="table-responsive">
+                                        <table class="table table-hover align-middle mb-0">
+                                            <thead class="bg-light">
+                                                <tr>
+                                                    <th class="ps-4">Vehicle</th>
+                                                    <th>Amount</th>
+                                                    <th>Date</th>
+                                                    <th class="pe-4">Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for p in payments %}
+                                                    <tr>
+                                                        <td class="ps-4">
+                                                            <div class="d-flex align-items-center">
+                                                                {% with p.car.images.first as img %}
+                                                                    {% if img %}
+                                                                        <img src="{{ img.image.url }}" class="rounded me-3" style="width: 50px; height: 40px; object-fit: cover;">
+                                                                    {% endif %}
+                                                                {% endwith %}
+                                                                <div>
+                                                                    <h6 class="fw-bold mb-0">{{ p.car.model_name }}</h6>
+                                                                    <small class="text-muted">{{ p.car.year }} {{ p.car.brand.name }}</small>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td class="fw-bold">₦{{ p.amount|floatformat:0|intcomma }}</td>
+                                                        <td class="text-muted">{{ p.created_at|date:"M d, Y" }}</td>
+                                                        <td class="pe-4">
+                                                            {% if p.status == 'success' %}
+                                                                <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill"><i class="bi bi-check-circle me-1"></i> Successful</span>
+                                                            {% elif p.status == 'pending' %}
+                                                                <span class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 rounded-pill"><i class="bi bi-clock me-1"></i> Pending</span>
+                                                            {% else %}
+                                                                <span class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-pill"><i class="bi bi-x-circle me-1"></i> Failed</span>
+                                                            {% endif %}
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                {% else %}
+                                    <div class="text-center py-5">
+                                        <i class="bi bi-wallet2 display-4 text-muted mb-3 d-block"></i>
+                                        <p class="text-muted">You have not made any payments yet.</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Test Drives -->
+                    <div class="col-lg-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header bg-white border-bottom py-3">
+                                <h5 class="fw-bold mb-0"><i class="bi bi-key me-2 text-primary"></i>My Test Drives</h5>
+                            </div>
+                            <div class="card-body p-0">
+                                {% if test_drives %}
+                                    <ul class="list-group list-group-flush">
+                                        {% for td in test_drives %}
+                                            <li class="list-group-item p-4">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <h6 class="fw-bold mb-1">{{ td.car }}</h6>
+                                                        <small class="text-muted"><i class="bi bi-calendar me-1"></i> {{ td.preferred_date|date:"M d, Y" }} at {{ td.preferred_time }}</small>
+                                                    </div>
+                                                    {% if td.status == 'confirmed' %}
+                                                        <span class="badge bg-success">Confirmed</span>
+                                                    {% elif td.status == 'pending' %}
+                                                        <span class="badge bg-warning text-dark">Pending</span>
+                                                    {% else %}
+                                                        <span class="badge bg-secondary">{{ td.get_status_display }}</span>
+                                                    {% endif %}
+                                                </div>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <div class="text-center py-5">
+                                        <p class="text-muted mb-0">No test drives booked.</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Service Appointments -->
+                    <div class="col-lg-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                                <h5 class="fw-bold mb-0"><i class="bi bi-tools me-2 text-info"></i>Service Appointments</h5>
+                                <a href="{% url 'book_service' %}" class="btn btn-sm btn-outline-dark fw-bold">New</a>
+                            </div>
+                            <div class="card-body p-0">
+                                {% if services %}
+                                    <ul class="list-group list-group-flush">
+                                        {% for s in services %}
+                                            <li class="list-group-item p-4">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <h6 class="fw-bold mb-1">{{ s.car_model }}</h6>
+                                                        <small class="text-muted">{{ s.service_type }} · {{ s.preferred_date|date:"M d, Y" }}</small>
+                                                    </div>
+                                                    <span class="badge bg-info text-dark">{{ s.get_status_display }}</span>
+                                                </div>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <div class="text-center py-5">
+                                        <p class="text-muted mb-0">No service appointments.</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Inquiries -->
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-white border-bottom py-3">
+                                <h5 class="fw-bold mb-0"><i class="bi bi-envelope me-2 text-warning"></i>My Inquiries</h5>
+                            </div>
+                            <div class="card-body p-0">
+                                {% if inquiries %}
+                                    <ul class="list-group list-group-flush">
+                                        {% for inquiry in inquiries %}
+                                            <li class="list-group-item p-4">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <h6 class="fw-bold mb-1">{{ inquiry.car|default:"General Inquiry" }}</h6>
+                                                        <small class="text-muted">Sent on {{ inquiry.created_at|date:"M d, Y" }}</small>
+                                                    </div>
+                                                    <span class="badge bg-secondary">{{ inquiry.get_status_display }}</span>
+                                                </div>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <div class="text-center py-5">
+                                        <p class="text-muted mb-0">No inquiries made yet.</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom CSS for Dashboard -->
+<style>
+    /* Smooth transitions for hover states */
+    .list-group-item {
+        transition: background-color 0.2s ease;
+    }
+    .list-group-item:hover {
+        background-color: #f8f9fa;
+    }
+    
+    /* Make sure table looks good on mobile */
+    @media (max-width: 768px) {
+        .table-responsive {
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,273 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}ZNYH Cars Nigeria Limited — Premium Dealership{% endblock %}
+
+{% block content %}
+<!-- 1. ADVERTIZING HERO SECTION -->
+<div class="hero-wrapper position-relative d-flex align-items-center">
+    <div class="hero-bg position-absolute w-100 h-100" 
+         style="background: linear-gradient(90deg, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0.8) 45%, rgba(10,10,10,0.2) 100%), url('https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1920&q=80') center/cover;">
+    </div>
+    
+    <div class="container position-relative" style="z-index: 2;">
+        <div class="row min-vh-100 align-items-center py-5">
+            <div class="col-lg-8">
+                <!-- MASSIVE BRAND ADVERTISEMENT -->
+                <h1 class="display-1 fw-black text-white mb-2 lh-1 text-uppercase brand-advert">
+                    ZNYH <span class="text-warning">CARS</span>
+                </h1>
+                <h2 class="display-5 fw-bold text-light mb-4 text-shadow">Nigeria's Premier Dealership.</h2>
+                
+                <p class="lead text-light opacity-75 mb-5 fs-4" style="max-width: 650px;">
+                    We don't just sell cars; we deliver an experience. Discover our curated collection of exceptional new and certified pre-owned vehicles.
+                </p>
+                
+                <div class="d-flex flex-column flex-sm-row gap-3">
+                    <a href="{% url 'car_list' %}" class="btn btn-warning btn-lg px-5 py-3 fw-bold text-dark shadow-lg text-uppercase tracking-wide">Explore Inventory</a>
+                    <a href="{% url 'contact' %}" class="btn btn-outline-light btn-lg px-5 py-3 fw-bold text-uppercase tracking-wide">Contact Sales</a>
+                </div>
+                
+                <div class="d-flex gap-5 mt-5 pt-4 border-top border-secondary border-opacity-25">
+                    <div>
+                        <h3 class="text-white fw-bold mb-0">150+</h3>
+                        <small class="text-light opacity-50 text-uppercase tracking-wide">Cars Available</small>
+                    </div>
+                    <div>
+                        <h3 class="text-white fw-bold mb-0">100%</h3>
+                        <small class="text-light opacity-50 text-uppercase tracking-wide">Verified Quality</small>
+                    </div>
+                    <div>
+                        <h3 class="text-white fw-bold mb-0">5★</h3>
+                        <small class="text-light opacity-50 text-uppercase tracking-wide">Customer Rating</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 2. FLOATING SEARCH BAR -->
+<div class="container search-container">
+    <div class="card border-0 shadow-lg rounded-0 bg-white">
+        <div class="card-body p-0">
+            <form action="{% url 'car_list' %}" method="get" class="row g-0 align-items-center">
+                <div class="col-md-3 border-end p-3">
+                    <label class="form-label fw-bold small text-muted mb-1 text-uppercase">Search</label>
+                    <input type="text" name="q" class="form-control border-0 bg-transparent px-0 shadow-none" placeholder="Make or model...">
+                </div>
+                <div class="col-md-2 border-end p-3">
+                    <label class="form-label fw-bold small text-muted mb-1 text-uppercase">Brand</label>
+                    <select name="brand" class="form-select border-0 bg-transparent px-0 shadow-none">
+                        <option value="">Any Brand</option>
+                        {% for b in brands %}
+                            <option value="{{ b.id }}">{{ b.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2 border-end p-3">
+                    <label class="form-label fw-bold small text-muted mb-1 text-uppercase">Condition</label>
+                    <select name="condition" class="form-select border-0 bg-transparent px-0 shadow-none">
+                        <option value="">Any</option>
+                        <option value="new">New</option>
+                        <option value="used">Used</option>
+                        <option value="certified">Certified</option>
+                    </select>
+                </div>
+                <div class="col-md-3 border-end p-3">
+                    <label class="form-label fw-bold small text-muted mb-1 text-uppercase">Max Budget (₦)</label>
+                    <input type="number" name="max_price" class="form-control border-0 bg-transparent px-0 shadow-none" placeholder="e.g. 50,000,000">
+                </div>
+                <div class="col-md-2 p-2">
+                    <button type="submit" class="btn btn-dark w-100 py-3 fw-bold rounded-0 text-uppercase">Search</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 3. FEATURED VEHICLES -->
+<div class="container py-5 mt-5">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <h6 class="text-warning fw-bold text-uppercase tracking-wide mb-2">Our Selection</h6>
+            <h2 class="fw-bold display-6 mb-0">Featured Vehicles</h2>
+        </div>
+        <a href="{% url 'car_list' %}" class="btn btn-outline-dark rounded-0 fw-bold d-none d-md-block text-uppercase">View Entire Collection</a>
+    </div>
+
+    <div class="row g-4">
+        {% for car in featured_cars %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm bg-white overflow-hidden car-card">
+                    <div class="position-relative overflow-hidden" style="height: 260px;">
+                        {% with car.images.first as img %}
+                            {% if img %}
+                                <img src="{{ img.image.url }}" class="w-100 h-100 car-image" style="object-fit:cover;" alt="{{ car }}">
+                            {% else %}
+                                <div class="d-flex align-items-center justify-content-center h-100 bg-light">
+                                    <i class="bi bi-car-front display-1 text-muted"></i>
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                        
+                        <div class="position-absolute top-0 start-0 m-3 d-flex gap-2">
+                            <span class="badge bg-dark px-3 py-2 rounded-0">{{ car.year }}</span>
+                            {% if car.condition == 'new' %}
+                                <span class="badge bg-success px-3 py-2 rounded-0">New</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-muted fw-bold small text-uppercase">{{ car.brand.name }}</span>
+                            <span class="text-warning fw-bold fs-5">₦{{ car.price|floatformat:0|intcomma }}</span>
+                        </div>
+                        <h4 class="card-title fw-bold mb-3">{{ car.model_name }}</h4>
+                        
+                        <div class="d-flex justify-content-between text-muted small border-top pt-3 mt-3">
+                            <div><i class="bi bi-speedometer2 me-1 text-dark"></i> {{ car.mileage|intcomma }} km</div>
+                            <div><i class="bi bi-gear me-1 text-dark"></i> {{ car.get_transmission_display }}</div>
+                            <div><i class="bi bi-fuel-pump me-1 text-dark"></i> {{ car.get_fuel_type_display }}</div>
+                        </div>
+                    </div>
+                    <a href="{% url 'car_detail' car.slug %}" class="btn btn-dark w-100 py-3 rounded-0 fw-bold text-uppercase">View Details</a>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12 text-center py-5 border">
+                <h4 class="text-muted">No featured cars available.</h4>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- 4. BROWSE BY BRAND -->
+<div class="bg-light py-5 border-top border-bottom">
+    <div class="container">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold text-uppercase">Browse by Brand</h2>
+        </div>
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+            {% for brand in brands %}
+                <a href="{% url 'car_list' %}?brand={{ brand.id }}" class="btn btn-white bg-white border rounded-0 shadow-sm px-4 py-3 fw-bold text-dark brand-btn text-uppercase">
+                    {{ brand.name }}
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- 5. WHY CHOOSE US -->
+<div class="container py-5 my-5">
+    <div class="row align-items-center g-5">
+        <div class="col-lg-6">
+            <img src="https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=800&q=80" alt="Car Dealership" class="img-fluid shadow-lg">
+        </div>
+        <div class="col-lg-6">
+            <h6 class="text-warning fw-bold text-uppercase tracking-wide mb-2">Why ZNYH Cars</h6>
+            <h2 class="fw-bold display-6 mb-4">The Standard for Premium Car Buying.</h2>
+            <p class="text-muted fs-5 mb-4">We believe buying a car should be as exciting as driving one. We remove the stress, the haggling, and the uncertainty.</p>
+            
+            <div class="d-flex mb-4">
+                <i class="bi bi-check-circle-fill text-success fs-4 me-3"></i>
+                <div>
+                    <h5 class="fw-bold mb-1">Verified Quality</h5>
+                    <p class="text-muted small mb-0">Every vehicle undergoes a rigorous 150-point inspection.</p>
+                </div>
+            </div>
+            <div class="d-flex mb-4">
+                <i class="bi bi-check-circle-fill text-success fs-4 me-3"></i>
+                <div>
+                    <h5 class="fw-bold mb-1">Transparent Pricing</h5>
+                    <p class="text-muted small mb-0">No hidden fees. The price you see is the price you pay.</p>
+                </div>
+            </div>
+            <div class="d-flex">
+                <i class="bi bi-check-circle-fill text-success fs-4 me-3"></i>
+                <div>
+                    <h5 class="fw-bold mb-1">Secure Payments</h5>
+                    <p class="text-muted small mb-0">Reserve your car online with a secure, encrypted deposit.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 6. TESTIMONIALS -->
+<div class="bg-dark py-5">
+    <div class="container py-5">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold text-white display-6">What Our Customers Say</h2>
+            <p class="text-light opacity-50">Trusted by hundreds of happy drivers across Nigeria.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="bg-secondary bg-opacity-25 p-4 h-100">
+                    <div class="text-warning mb-3">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                    </div>
+                    <p class="text-light opacity-75 mb-4">"ZNYH made buying my first car incredibly easy. The deposit process was secure, and the car was exactly as described."</p>
+                    <h6 class="text-white fw-bold mb-0">Adebayo O.</h6>
+                    <small class="text-light opacity-50">Lagos</small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="bg-secondary bg-opacity-25 p-4 h-100">
+                    <div class="text-warning mb-3">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                    </div>
+                    <p class="text-light opacity-75 mb-4">"I booked a test drive online and the team was ready for me when I arrived. No pressure, just great service and genuine cars."</p>
+                    <h6 class="text-white fw-bold mb-0">Chinwe M.</h6>
+                    <small class="text-light opacity-50">Abuja</small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="bg-secondary bg-opacity-25 p-4 h-100">
+                    <div class="text-warning mb-3">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
+                    </div>
+                    <p class="text-light opacity-75 mb-4">"Their service center is top notch. I booked an appointment for my SUV and they handled everything perfectly."</p>
+                    <h6 class="text-white fw-bold mb-0">Samuel K.</h6>
+                    <small class="text-light opacity-50">Port Harcourt</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 7. CTA -->
+<div class="bg-warning py-5">
+    <div class="container text-center py-4">
+        <h2 class="fw-bold mb-3 display-6 text-dark">Ready to get behind the wheel?</h2>
+        <a href="{% url 'car_list' %}" class="btn btn-dark btn-lg px-5 py-3 fw-bold mt-3 rounded-0 text-uppercase tracking-wide">Start Browsing</a>
+    </div>
+</div>
+
+<style>
+    .tracking-wide { letter-spacing: 2px; }
+    .text-shadow { text-shadow: 2px 2px 8px rgba(0,0,0,0.6); }
+    
+    /* Massive Brand Text */
+    .brand-advert {
+        font-weight: 900;
+        letter-spacing: -2px;
+        text-shadow: 4px 4px 20px rgba(0,0,0,0.8);
+    }
+
+    .hero-wrapper { position: relative; min-height: 100vh; }
+    .search-container { margin-top: -50px; position: relative; z-index: 10; }
+    
+    .car-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .car-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important; }
+    .car-image { transition: transform 0.6s ease; }
+    .car-card:hover .car-image { transform: scale(1.05); }
+    
+    .brand-btn { transition: all 0.2s ease; }
+    .brand-btn:hover { background-color: #212529 !important; color: white !important; border-color: #212529 !important; }
+    
+    .form-control:focus, .form-select:focus { box-shadow: none; border-color: transparent; }
+</style>
+{% endblock %}

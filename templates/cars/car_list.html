@@ -1,0 +1,237 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% block title %}Premium Inventory — ZNYH Cars{% endblock %}
+
+{% block content %}
+<!-- ========================================== -->
+<!-- 1. ELEGANT HEADER SECTION                  -->
+<!-- ========================================== -->
+<div class="bg-dark text-white py-5 position-relative overflow-hidden" style="background: linear-gradient(rgba(10,10,10,0.8), rgba(10,10,10,0.9)), url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1920&q=80') center/cover;">
+    <div class="container position-relative" style="z-index: 2;">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <span class="badge bg-warning text-dark mb-2 px-3 py-1 fw-bold tracking-wide">OUR COLLECTION</span>
+                <h1 class="display-4 fw-bold mb-0">Premium Inventory</h1>
+                <p class="lead text-light opacity-75 mb-0 mt-2">Discover your next vehicle from our curated selection.</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-4 mt-md-0">
+                <h4 class="text-warning fw-bold mb-0">{{ page_obj.paginator.count }} Vehicles</h4>
+                <small class="text-light opacity-50">Available right now</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- 2. SLEEK SEARCH & FILTER BAR               -->
+<!-- ========================================== -->
+<div class="container filter-overlap">
+    <div class="card border-0 shadow-lg rounded-4 bg-white">
+        <div class="card-body p-4">
+            <form method="get" class="row g-3 align-items-end">
+                
+                <!-- Search -->
+                <div class="col-lg-3 col-md-6">
+                    <label class="form-label fw-bold small text-muted text-uppercase">Keyword</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-0"><i class="bi bi-search"></i></span>
+                        <input type="text" name="q" value="{{ filters.q }}" class="form-control bg-light border-0" placeholder="Search make or model...">
+                    </div>
+                </div>
+
+                <!-- Brand -->
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label fw-bold small text-muted text-uppercase">Brand</label>
+                    <select name="brand" class="form-select bg-light border-0">
+                        <option value="">All Brands</option>
+                        {% for b in brands %}
+                            <option value="{{ b.id }}" {% if filters.brand == b.id|stringformat:"s" %}selected{% endif %}>{{ b.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Condition -->
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label fw-bold small text-muted text-uppercase">Condition</label>
+                    <select name="condition" class="form-select bg-light border-0">
+                        <option value="">Any</option>
+                        {% for value, label in condition_choices %}
+                            <option value="{{ value }}" {% if filters.condition == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Price Range -->
+                <div class="col-lg-3 col-md-6">
+                    <label class="form-label fw-bold small text-muted text-uppercase">Price Range (₦)</label>
+                    <div class="input-group">
+                        <input type="number" name="min_price" value="{{ filters.min_price }}" class="form-control bg-light border-0" placeholder="Min">
+                        <span class="input-group-text bg-light border-0">-</span>
+                        <input type="number" name="max_price" value="{{ filters.max_price }}" class="form-control bg-light border-0" placeholder="Max">
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="col-lg-2 col-md-12">
+                    <button type="submit" class="btn btn-dark w-100 py-2 fw-bold rounded-3">Apply Filters</button>
+                </div>
+            </form>
+            
+            <!-- Active Filters / Clear -->
+            {% if filters.q or filters.brand or filters.condition or filters.min_price or filters.max_price %}
+                <div class="mt-3 pt-3 border-top d-flex align-items-center justify-content-between">
+                    <small class="text-muted"><i class="bi bi-funnel-fill me-1"></i> Filters applied</small>
+                    <a href="{% url 'car_list' %}" class="btn btn-sm btn-outline-danger rounded-pill px-3">Clear All</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- 3. SPARKLING RESPONSIVE CAR GRID           -->
+<!-- ========================================== -->
+<div class="container py-5 mt-4">
+    <div class="row g-4">
+        {% for car in page_obj %}
+            <div class="col-xl-4 col-lg-4 col-md-6 d-flex align-items-stretch">
+                <div class="card w-100 border-0 shadow-sm car-card bg-white overflow-hidden d-flex flex-column">
+                    
+                    <!-- Image & Badges -->
+                    <div class="position-relative bg-light overflow-hidden" style="height: 240px;">
+                        {% with car.images.first as img %}
+                            {% if img %}
+                                <img src="{{ img.image.url }}" class="card-img-top car-image w-100 h-100" style="object-fit:cover;" alt="{{ car }}">
+                            {% else %}
+                                <div class="d-flex align-items-center justify-content-center h-100">
+                                    <i class="bi bi-car-front display-1 text-muted"></i>
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                        
+                        <!-- Condition Badge -->
+                        <span class="position-absolute top-0 end-0 m-3 badge {% if car.condition == 'new' %}bg-success{% elif car.condition == 'certified' %}bg-info{% else %}bg-dark{% endif %} px-3 py-2 fs-6 shadow-sm rounded-pill">
+                            {{ car.get_condition_display }}
+                        </span>
+
+                        <!-- Year Badge -->
+                        <span class="position-absolute top-0 start-0 m-3 badge bg-warning text-dark px-3 py-2 fs-6 shadow-sm rounded-pill fw-bold">
+                            {{ car.year }}
+                        </span>
+                    </div>
+                    
+                    <!-- Car Details -->
+                    <div class="card-body p-4 d-flex flex-column flex-grow-1">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-uppercase text-muted fw-bold small tracking-wide">{{ car.brand.name }}</span>
+                            <span class="text-muted small"><i class="bi bi-geo-alt-fill me-1 text-warning"></i>Lagos</span>
+                        </div>
+                        
+                        <h5 class="card-title fw-bold mb-3 fs-5 text-truncate">{{ car.model_name }}</h5>
+                        
+                        <!-- Specs Icons -->
+                        <div class="d-flex gap-3 mb-4 text-muted small fw-semibold mt-auto">
+                            <div><i class="bi bi-speedometer2 me-1 text-dark"></i> {{ car.mileage|intcomma }} km</div>
+                            <div><i class="bi bi-gear me-1 text-dark"></i> {{ car.get_transmission_display }}</div>
+                            <div><i class="bi bi-fuel-pump me-1 text-dark"></i> {{ car.get_fuel_type_display }}</div>
+                        </div>
+                        
+                        <!-- Price & Action -->
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top mt-auto">
+                            <h4 class="text-dark fw-bold mb-0">₦{{ car.price|floatformat:0|intcomma }}</h4>
+                            <a href="{% url 'car_detail' car.slug %}" class="btn btn-outline-dark fw-bold px-4 rounded-pill">View</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <!-- Empty State -->
+            <div class="col-12 text-center py-5">
+                <div class="bg-light rounded-4 p-5 border">
+                    <i class="bi bi-search display-1 text-muted mb-3"></i>
+                    <h3 class="fw-bold">No vehicles found</h3>
+                    <p class="text-muted mb-4">We couldn't find any cars matching your exact filters.</p>
+                    <a href="{% url 'car_list' %}" class="btn btn-dark px-4 py-2 fw-bold rounded-pill">Reset Filters</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 4. MODERN PAGINATION                       -->
+    <!-- ========================================== -->
+    {% if page_obj.has_other_pages %}
+        <nav class="mt-5 pt-4 border-top">
+            <ul class="pagination justify-content-center gap-2">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link border-0 shadow-sm rounded-circle d-flex align-items-center justify-content-center" href="?page={{ page_obj.previous_page_number }}{% if filters.q %}&q={{ filters.q }}{% endif %}{% if filters.brand %}&brand={{ filters.brand }}{% endif %}{% if filters.condition %}&condition={{ filters.condition }}{% endif %}{% if filters.min_price %}&min_price={{ filters.min_price }}{% endif %}{% if filters.max_price %}&max_price={{ filters.max_price }}{% endif %}" style="width: 40px; height: 40px;">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+                {% endif %}
+
+                <li class="page-item active">
+                    <span class="page-link bg-dark border-dark rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px;">
+                        {{ page_obj.number }}
+                    </span>
+                </li>
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link border-0 shadow-sm rounded-circle d-flex align-items-center justify-content-center text-dark" href="?page={{ page_obj.next_page_number }}{% if filters.q %}&q={{ filters.q }}{% endif %}{% if filters.brand %}&brand={{ filters.brand }}{% endif %}{% if filters.condition %}&condition={{ filters.condition }}{% endif %}{% if filters.min_price %}&min_price={{ filters.min_price }}{% endif %}{% if filters.max_price %}&max_price={{ filters.max_price }}{% endif %}" style="width: 40px; height: 40px;">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+            <p class="text-center text-muted small mt-2">Showing page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</p>
+        </nav>
+    {% endif %}
+</div>
+
+<!-- ========================================== -->
+<!-- CUSTOM CSS FOR INVENTORY PAGE              -->
+<!-- ========================================== -->
+<style>
+    .tracking-wide { letter-spacing: 1px; }
+
+    /* Pulls the filter card up into the header */
+    .filter-overlap { 
+        margin-top: -50px; 
+        position: relative; 
+        z-index: 10; 
+    }
+
+    /* Sparkling Card Hover Effect */
+    .car-card { 
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
+    }
+    .car-card:hover { 
+        transform: translateY(-8px); 
+        box-shadow: 0 20px 40px rgba(0,0,0,0.12) !important; 
+    }
+    
+    /* Image Zoom Effect */
+    .car-image { 
+        transition: transform 0.6s ease; 
+    }
+    .car-card:hover .car-image { 
+        transform: scale(1.08); 
+    }
+
+    /* Remove default focus rings for a cleaner look */
+    .form-control:focus, .form-select:focus { 
+        box-shadow: none; 
+        background-color: #fff !important;
+        border: 1px solid #ddd !important;
+    }
+
+    /* Responsive Fixes */
+    @media (max-width: 768px) {
+        .filter-overlap { margin-top: -30px; }
+        .display-4 { font-size: 2.5rem; }
+    }
+</style>
+{% endblock %}

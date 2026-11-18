@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Thank You — ZNYH Cars{% endblock %}
+
+{% block content %}
+<div class="container my-5 text-center" style="max-width:600px;">
+    <h1 class="mb-3">Thank You!</h1>
+    <p class="lead">Your inquiry has been received. We'll contact you shortly.</p>
+    <a href="{% url 'home' %}" class="btn btn-primary">Back to Home</a>
+</div>
+{% endblock %}

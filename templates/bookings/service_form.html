@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}Book a Service — ZNYH Cars{% endblock %}
+
+{% block content %}
+<div class="bg-dark text-white py-5 mb-4 text-center">
+    <div class="container">
+        <h1 class="fw-bold mb-2"><i class="bi bi-tools me-2"></i>Book a Service</h1>
+        <p class="lead mb-0">Keep your car running smoothly with our expert technicians.</p>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-lg">
+                <div class="card-body p-4 p-md-5">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row g-3">
+                            {% for field in form %}
+                                <div class="col-12 {% if field.name == 'preferred_date' or field.name == 'service_type' %}col-md-6{% endif %}">
+                                    <label class="form-label fw-semibold">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                        <small class="text-muted d-block mt-1">{{ field.help_text }}</small>
+                                    {% endif %}
+                                    {% for error in field.errors %}
+                                        <div class="text-danger small mt-1">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="alert alert-info mt-4 d-flex align-items-center">
+                            <i class="bi bi-info-circle-fill fs-4 me-3"></i>
+                            <div>
+                                Our service team will contact you shortly to confirm your appointment time.
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-dark btn-lg w-100 fw-bold mt-3">Request Appointment</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

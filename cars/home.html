@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block title %}ZNYH Cars Nigeria Limited — Home{% endblock %}
+
+{% block content %}
+<div class="bg-dark text-white py-5">
+    <div class="container">
+        <h1 class="display-4">Find Your Next Car</h1>
+        <p class="lead">Quality new and used cars, trusted dealership in Nigeria.</p>
+        <a href="{% url 'car_list' %}" class="btn btn-warning btn-lg">Browse Cars</a>
+    </div>
+</div>
+
+<div class="container my-5">
+    <h2 class="mb-4">Featured Cars</h2>
+    <div class="row">
+        {% for car in featured_cars %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    {% with car.images.first as img %}
+                        {% if img %}
+                            <img src="{{ img.image.url }}" class="card-img-top" style="height:200px; object-fit:cover;" alt="{{ car }}">
+                        {% else %}
+                            <div class="bg-secondary" style="height:200px;"></div>
+                        {% endif %}
+                    {% endwith %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ car }}</h5>
+                        <p class="text-muted">₦{{ car.price|floatformat:0 }}</p>
+                        <a href="{% url 'car_detail' car.slug %}" class="btn btn-sm btn-primary">View Details</a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p>No featured cars yet.</p>
+        {% endfor %}
+    </div>
+
+    <h2 class="mb-4 mt-5">Latest Arrivals</h2>
+    <div class="row">
+        {% for car in latest_cars %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    {% with car.images.first as img %}
+                        {% if img %}
+                            <img src="{{ img.image.url }}" class="card-img-top" style="height:200px; object-fit:cover;" alt="{{ car }}">
+                        {% else %}
+                            <div class="bg-secondary" style="height:200px;"></div>
+                        {% endif %}
+                    {% endwith %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ car }}</h5>
+                        <p class="text-muted">₦{{ car.price|floatformat:0 }}</p>
+                        <a href="{% url 'car_detail' car.slug %}" class="btn btn-sm btn-primary">View Details</a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p>No cars yet.</p>
+        {% endfor %}
+    </div>
+
+    <h2 class="mb-4 mt-5">Browse by Brand</h2>
+    <div class="d-flex flex-wrap gap-2">
+        {% for brand in brands %}
+            <a href="{% url 'car_list' %}?brand={{ brand.id }}" class="btn btn-outline-dark">{{ brand.name }}</a>
+        {% empty %}
+            <p>No brands yet.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
